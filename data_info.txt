@@ -1,0 +1,87 @@
+1.path
+    /data/soonshin/as/CORPUS
+        
+2.structure
+    |data_logical 
+        |ASVspoof2019_LA_asv
+            |ASVspoof2019_LA_asv_protocols
+                |20364  ASVspoof2019.LA.asv.dev.female.trl.txt
+                |6      ASVspoof2019.LA.asv.dev.female.trn.txt
+                |29548  ASVspoof2019.LA.asv.dev.gi.trl.txt
+                |9184   ASVspoof2019.LA.asv.dev.male.trl.txt
+                |4      ASVspoof2019.LA.asv.dev.male.trn.txt
+                |69525  ASVspoof2019.LA.asv.eval.female.trl.txt
+                |27     ASVspoof2019.LA.asv.eval.female.trn.txt
+                |102579 ASVspoof2019.LA.asv.eval.gi.trl.txt
+                |33054  ASVspoof2019.LA.asv.eval.male.trl.txt
+                |21     ASVspoof2019.LA.asv.eval.male.trn.txt
+            |ASVspoof2019_LA_asv_scores
+                |29548  ASVspoof2019.LA.asv.dev.gi.trl.scores.txt
+                |102579 ASVspoof2019.LA.asv.eval.gi.trl.scores.txt
+        |ASVspoof2019_LA_train
+            |flac
+                |25380  LA_T_*.flac 
+        |ASVspoof2019_LA_dev
+            |flac
+                |24986  LA_D_*.flac   
+        |ASVspoof2019_LA_eval
+            |flac
+                |71933  LA_E_*.flac 
+        |ASVspoof2019_LA_protocols
+            |25380  ASVspoof2019.LA.cm.train.trn.txt (2580 bonafide, 22800 spoof)
+            |24844  ASVspoof2019.LA.cm.dev.trl.txt (2548 bonafide, 22296 spoof)
+            |71237  ASVspoof2019.LA.cm.eval.trl.txt (7355 bonafide, 63882 spoof)
+    |data_physical 
+        |ASVspoof2019_PA_asv
+            |ASVspoof2019_PA_asv_protocols  
+                |25920  ASVspoof2019.PA.asv.dev.female.trl.txt
+                |162    ASVspoof2019.PA.asv.dev.female.trn.txt
+                |41039  ASVspoof2019.PA.asv.dev.gi.trl.txt
+                |5120   ASVspoof2019.PA.asv.dev.male.trl.txt
+                |108    ASVspoof2019.PA.asv.dev.male.trn.txt
+                |145800 ASVspoof2019.PA.asv.eval.female.trl.txt
+                |729    ASVspoof2019.PA.asv.eval.female.trn.txt
+                |253529 ASVspoof2019.PA.asv.eval.gi.trl.txt
+                |107730 ASVspoof2019.PA.asv.eval.male.trl.txt
+                |567    ASVspoof2019.PA.asv.eval.male.trn.txt
+            |ASVspoof2019_PA_asv_scores
+                |41039  ASVspoof2019.PA.asv.dev.gi.trl.scores.txt
+                |253529 ASVspoof2019.PA.asv.eval.gi.trl.scores.txt
+        |ASVspoof2019_PA_train
+            |flac
+                |54000  RA_T_*.flac
+        |ASVspoof2019_PA_dev
+            |flac
+                |33534  PA_D_*.flac
+        |ASVspoof2019_PA_eval
+            |flac
+                |153522 PA_E_*.flac
+        |ASVspoof2019_PA_protocols  
+            |54000  ASVspoof2019.PA.cm.train.trn.txt
+            |29700  ASVspoof2019.PA.cm.dev.trl.txt
+            |134730 ASVspoof2019.PA.cm.eval.trl.txt
+            
+3. details
+    <For LA>
+        1) SPEAKER_ID: LA_****, a 4-digit speaker ID
+        2) AUDIO_FILE_NAME: LA_****, name of the audio file
+        3) -: This column is NOT used for LA.
+        4) SYSTEM_ID: ID of the speech spoofing system (A01 - A19),  or, for bonafide speech SYSTEM-ID is left blank ('-')
+        5) KEY: 'bonafide' for genuine speech, or, 'spoof' for spoofing speech
+    
+    <For PA>
+        1) SPEAKER_ID: PA_****, a 4-digit speaker ID
+        2) AUDIO_FILE_NAME: name of the audio file
+        3) ENVIRONMENT_ID: a triplet (S,R,D_s), which take one letter in the set {a,b,c} as categorical value, defined as:
+                                                    a		b		c
+			--------------------------------------------------------------------------------
+			S:   Room size (square meters)		    2-5		5-10    10-20
+			R:   T60 (ms)				            50-200  200-600 600-1000
+			D_s: Talker-to-ASV distance (cm)	    10-50	50-100  100-150
+        4) ATTACK_ID: a duple (D_a,Q), which take one letter in the set {A,B,C} as categorical value, defined as
+                                                    A		B		C
+			-----------------------------------------------------------------------------
+			Z: Attacker-to-talker distance (cm)	    10-50   50-100  > 100
+			Q: Replay device quality		        perfect high	low
+			for bonafide speech, ATTACK_ID is left blank ('-')
+        5) KEY: 'bonafide' for genuine speech, or, 'spoof' for spoofing speech
