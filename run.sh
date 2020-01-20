@@ -16,7 +16,6 @@ if [ $stage -le 1 ]; then
         --train_batch_size=32 \
         --dev_batch_size=32 \
         --num_epochs=200 \
-        --embedding_size=50 \
         --embedding_size=128 \
         --model_comment=siamesefit1 \
         --loss=nll \
@@ -39,7 +38,6 @@ if [ $stage -le 2 ]; then
         --train_batch_size=32 \
         --dev_batch_size=32 \
         --num_epochs=200 \
-        --embedding_size=50 \
         --embedding_size=128 \
         --model_comment=siamesefit1 \
         --loss=nll \
@@ -74,7 +72,6 @@ if [ $stage -le 4 ]; then
         --train_batch_size=32 \
         --dev_batch_size=32 \
         --num_epochs=200 \
-        --embedding_size=50 \
         --embedding_size=128 \
         --model_comment=siamesefit1 \
         --loss=cs \
@@ -99,7 +96,6 @@ if [ $stage -le 5 ]; then
         --train_batch_size=32 \
         --dev_batch_size=32 \
         --num_epochs=200 \
-        --embedding_size=50 \
         --embedding_size=128 \
         --model_comment=siamesefit1 \
         --loss=nll \

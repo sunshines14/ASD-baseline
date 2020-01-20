@@ -314,7 +314,7 @@ if __name__ == '__main__':
         scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
                 optim, 'min', factor=args.sched_factor, patience=args.sched_patience, min_lr=args.sched_min_lr, verbose=False)
         # +) early stopping
-        early_stopping = EarlyStopping(patience=args.es_patience, verbose=False) 
+        #early_stopping = EarlyStopping(patience=args.es_patience, verbose=False) 
         # +) fine-tuning mode
         if args.fit_mode:
             # +) tensorboardX, log
@@ -330,10 +330,10 @@ if __name__ == '__main__':
                 print('\n{} - train loss: {:.5f} - dev loss: {:.5f}'.format(epoch, train_loss, dev_loss))
                 torch.save(model.state_dict(), os.path.join(model_save_path, 'epoch_{}.pth'.format(epoch)))
                 dev_losses.append(dev_loss)
-                early_stopping(dev_loss, model)
-                if early_stopping.early_stop:
-                    print('early stopping !')
-                    break
+                #early_stopping(dev_loss, model)
+                #if early_stopping.early_stop:
+                #    print('early stopping !')
+                #    break
                 scheduler.step(dev_loss)
             minposs = dev_losses.index(min(dev_losses))+1
             print('lowest dev loss at epoch is {}'.format(minposs))
@@ -355,10 +355,10 @@ if __name__ == '__main__':
                     epoch, train_acc, dev_acc, train_loss, dev_loss))
                 torch.save(model.state_dict(), os.path.join(model_save_path, 'epoch_{}.pth'.format(epoch)))
                 dev_losses.append(dev_loss)
-                early_stopping(dev_loss, model)
-                if early_stopping.early_stop:
-                    print('early stopping !')
-                    break
+                #early_stopping(dev_loss, model)
+                #if early_stopping.early_stop:
+                #    print('early stopping !')
+                #    break
                 scheduler.step(dev_loss)
             minposs = dev_losses.index(min(dev_losses))+1
             print('lowest dev loss at epoch is {}'.format(minposs))
