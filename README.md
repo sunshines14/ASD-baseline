@@ -1,1 +1,1 @@
-# Deep Metric Learning-based Adaptation with Residual Convolutional Siamese Network for Anomaly Audio Spoofing Detection
+# Deep Metric Learning-based Adaptation for Audio Spoofing Detection
