@@ -136,12 +136,12 @@ class Dataset(Dataset):
     
     # function 2
     def __getitem__(self, idx):
-        # +) sample selection (pre-training)(train,eval) (fine-tuning)(eval)
+        # +) sample selection (pre-training)(train,eval) (fine-tuning)(eval) (cp-fine-tuning)(eval)
         x = self.data_x[idx]
         y = self.data_y[idx]
         return x, x, y, self.data_meta[idx]
     
-        # +) sample selection (fine-tuning)(train)
+        # +) sample selection (fine-tuning)(train) (cp-fine-tuning)(train)
         #x = self.data_x[idx]
         #y = self.data_y[idx]
         #randidx = int(random.randrange(self.length))

@@ -128,12 +128,12 @@ class SiameseNetwork(nn.Module):
         out = self.block2(out)
         out = self.block3(out)
         out = self.mp(out)
-        out = self.block4(out) #
-        out = self.block5(out) #
-        out = self.block6(out) #
+        out = self.block4(out) # cp-fine-tuning
+        out = self.block5(out) # cp-fine-tuning
+        out = self.block6(out) # cp-fine-tuning
         out = self.mp(out)
         out = self.block7(out)
-        out = self.block8(out) #
+        out = self.block8(out) # cp-fine-tuning
         out = self.block9(out)
         out = self.bn(out)
         out = self.lrelu(out)
@@ -141,16 +141,16 @@ class SiameseNetwork(nn.Module):
         out = out.view(batch_size, -1)
         out = self.dropout(out)
         out = self.fc1(out)
-        out = self.lrelu(out) # 
-        out = self.fc2(out) # 
-        out = self.logsoftmax(out) # 
+        out = self.lrelu(out) # fine-tuning, cp-fine-tuning
+        out = self.fc2(out) # fine-tuning, cp-fine-tuning
+        out = self.logsoftmax(out) # fine-tuning, cp-fine-tuning
         return out
             
     def forward(self, x, x_pair):
         out = self.forward_once(x)
         out_pair = self.forward_once(x_pair)
-        out_pair = 0 #
-        result = out - out_pair
+        result = out
+        #result = out - out_pair # fine-tuning, cp-fine-tuning
         return result
     
 class TripletNetwork(nn.Module):

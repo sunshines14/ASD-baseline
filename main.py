@@ -213,6 +213,8 @@ if __name__ == '__main__':
     parser.add_argument('--resume_num_checkpoint', type=int, default=None) 
     parser.add_argument('--fit_mode', action='store_true', default=False)
     parser.add_argument('--fit_num_checkpoint', type=int, default=None) 
+    parser.add_argument('--cp_fit_mode', action='store_true', default=False)
+    parser.add_argument('--cp_fit_num_checkpoint', type=int, default=None) 
     args = parser.parse_args()
 	
     # 2) model tag
@@ -228,6 +230,13 @@ if __name__ == '__main__':
         if not os.path.exists('models/tune'):
             os.mkdir('models/tune')
         model_save_path = os.path.join('models/tune', model_tag)
+        if not os.path.exists(model_save_path):
+            os.mkdir(model_save_path)
+        print('model save path is ', model_save_path)
+    elif args.cp_fit_mode:  
+        if not os.path.exists('models/cp-tune'):
+            os.mkdir('models/cp-tune')
+        model_save_path = os.path.join('models/cp-tune', model_tag)
         if not os.path.exists(model_save_path):
             os.mkdir(model_save_path)
         print('model save path is ', model_save_path)
@@ -286,7 +295,7 @@ if __name__ == '__main__':
             print('model for resume loaded from ', resume_checkpoint_path)
             summary(model, input_size=[(1025,126), (1025,126)])
             start = args.resume_num_checkpoint+1
-        # +) model init (check fit mode)    
+        # +) model init (check fine-tuning mode)    
         elif args.fit_mode:
             model = SiameseNetwork(args.embedding_size).to(device)
             fit_checkpoint_path = 'models/pre/{}/epoch_{}.pth'.format(model_tag, str(args.fit_num_checkpoint))
@@ -294,6 +303,14 @@ if __name__ == '__main__':
             print('model for fit loaded from ', fit_checkpoint_path)
             summary(model, input_size=[(1025,126), (1025,126)])
             start = 1
+        # +) model init (check compressed fine-tuning mode)     
+        elif args.cp_fit_mode:
+            model = SiameseNetwork(args.embedding_size).to(device)
+            fit_checkpoint_path = 'models/pre/{}/epoch_{}.pth'.format(model_tag, str(args.fit_num_checkpoint))
+            model.load_state_dict(torch.load(fit_checkpoint_path))
+            print('model for fit loaded from ', fit_checkpoint_path)
+            summary(model, input_size=[(1025,126), (1025,126)])
+            start = 1    
         # +) model init
         else:
             model = SiameseNetwork(args.embedding_size).to(device)
@@ -314,7 +331,7 @@ if __name__ == '__main__':
         scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
                 optim, 'min', factor=args.sched_factor, patience=args.sched_patience, min_lr=args.sched_min_lr, verbose=False)
         # +) early stopping
-        #early_stopping = EarlyStopping(patience=args.es_patience, verbose=False) 
+        early_stopping = EarlyStopping(patience=args.es_patience, verbose=False) 
         # +) fine-tuning mode
         if args.fit_mode:
             # +) tensorboardX, log
@@ -330,10 +347,32 @@ if __name__ == '__main__':
                 print('\n{} - train loss: {:.5f} - dev loss: {:.5f}'.format(epoch, train_loss, dev_loss))
                 torch.save(model.state_dict(), os.path.join(model_save_path, 'epoch_{}.pth'.format(epoch)))
                 dev_losses.append(dev_loss)
-                #early_stopping(dev_loss, model)
-                #if early_stopping.early_stop:
-                #    print('early stopping !')
-                #    break
+                early_stopping(dev_loss, model)
+                if early_stopping.early_stop:
+                    print('early stopping !')
+                    break
+                scheduler.step(dev_loss)
+            minposs = dev_losses.index(min(dev_losses))+1
+            print('lowest dev loss at epoch is {}'.format(minposs))
+        # +) compressed fine-tuning mode
+        if args.cp_fit_mode:
+            # +) tensorboardX, log
+            if not os.path.exists('logs/cp-tune'):
+                os.mkdir('logs/cp-tune')
+            writer = SummaryWriter('logs/cp-tune/{}'.format(model_tag))
+            dev_losses = []
+            for epoch in range(start, args.num_epochs+1):
+                train_loss = train_fit(train_loader, model, device, criterion, optim)
+                dev_loss = dev_fit(dev_loader, model, device, criterion)
+                writer.add_scalar('train_loss', train_loss, epoch)
+                writer.add_scalar('dev_loss', dev_loss, epoch)
+                print('\n{} - train loss: {:.5f} - dev loss: {:.5f}'.format(epoch, train_loss, dev_loss))
+                torch.save(model.state_dict(), os.path.join(model_save_path, 'epoch_{}.pth'.format(epoch)))
+                dev_losses.append(dev_loss)
+                early_stopping(dev_loss, model)
+                if early_stopping.early_stop:
+                    print('early stopping !')
+                    break
                 scheduler.step(dev_loss)
             minposs = dev_losses.index(min(dev_losses))+1
             print('lowest dev loss at epoch is {}'.format(minposs))
@@ -355,10 +394,10 @@ if __name__ == '__main__':
                     epoch, train_acc, dev_acc, train_loss, dev_loss))
                 torch.save(model.state_dict(), os.path.join(model_save_path, 'epoch_{}.pth'.format(epoch)))
                 dev_losses.append(dev_loss)
-                #early_stopping(dev_loss, model)
-                #if early_stopping.early_stop:
-                #    print('early stopping !')
-                #    break
+                early_stopping(dev_loss, model)
+                if early_stopping.early_stop:
+                    print('early stopping !')
+                    break
                 scheduler.step(dev_loss)
             minposs = dev_losses.index(min(dev_losses))+1
             print('lowest dev loss at epoch is {}'.format(minposs))
