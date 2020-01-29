@@ -303,10 +303,10 @@ if __name__ == '__main__':
             print('model for fit loaded from ', fit_checkpoint_path)
             summary(model, input_size=[(1025,126), (1025,126)])
             start = 1
-        # +) model init (check compressed fine-tuning mode)     
+        # +) model init (check cp-fine-tuning mode)     
         elif args.cp_fit_mode:
             model = SiameseNetwork(args.embedding_size).to(device)
-            fit_checkpoint_path = 'models/pre/{}/epoch_{}.pth'.format(model_tag, str(args.fit_num_checkpoint))
+            fit_checkpoint_path = 'models/tune/{}/epoch_{}.pth'.format(model_tag, str(args.cp_fit_num_checkpoint))
             model.load_state_dict(torch.load(fit_checkpoint_path))
             print('model for fit loaded from ', fit_checkpoint_path)
             summary(model, input_size=[(1025,126), (1025,126)])
@@ -331,7 +331,7 @@ if __name__ == '__main__':
         scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
                 optim, 'min', factor=args.sched_factor, patience=args.sched_patience, min_lr=args.sched_min_lr, verbose=False)
         # +) early stopping
-        early_stopping = EarlyStopping(patience=args.es_patience, verbose=False) 
+        #early_stopping = EarlyStopping(patience=args.es_patience, verbose=False) 
         # +) fine-tuning mode
         if args.fit_mode:
             # +) tensorboardX, log
@@ -347,15 +347,15 @@ if __name__ == '__main__':
                 print('\n{} - train loss: {:.5f} - dev loss: {:.5f}'.format(epoch, train_loss, dev_loss))
                 torch.save(model.state_dict(), os.path.join(model_save_path, 'epoch_{}.pth'.format(epoch)))
                 dev_losses.append(dev_loss)
-                early_stopping(dev_loss, model)
-                if early_stopping.early_stop:
-                    print('early stopping !')
-                    break
+                #early_stopping(dev_loss, model)
+                #if early_stopping.early_stop:
+                #    print('early stopping !')
+                #    break
                 scheduler.step(dev_loss)
             minposs = dev_losses.index(min(dev_losses))+1
             print('lowest dev loss at epoch is {}'.format(minposs))
-        # +) compressed fine-tuning mode
-        if args.cp_fit_mode:
+        # +) cp-fine-tuning mode
+        elif args.cp_fit_mode:
             # +) tensorboardX, log
             if not os.path.exists('logs/cp-tune'):
                 os.mkdir('logs/cp-tune')
@@ -369,10 +369,10 @@ if __name__ == '__main__':
                 print('\n{} - train loss: {:.5f} - dev loss: {:.5f}'.format(epoch, train_loss, dev_loss))
                 torch.save(model.state_dict(), os.path.join(model_save_path, 'epoch_{}.pth'.format(epoch)))
                 dev_losses.append(dev_loss)
-                early_stopping(dev_loss, model)
-                if early_stopping.early_stop:
-                    print('early stopping !')
-                    break
+                #early_stopping(dev_loss, model)
+                #if early_stopping.early_stop:
+                #    print('early stopping !')
+                #    break
                 scheduler.step(dev_loss)
             minposs = dev_losses.index(min(dev_losses))+1
             print('lowest dev loss at epoch is {}'.format(minposs))
@@ -394,10 +394,10 @@ if __name__ == '__main__':
                     epoch, train_acc, dev_acc, train_loss, dev_loss))
                 torch.save(model.state_dict(), os.path.join(model_save_path, 'epoch_{}.pth'.format(epoch)))
                 dev_losses.append(dev_loss)
-                early_stopping(dev_loss, model)
-                if early_stopping.early_stop:
-                    print('early stopping !')
-                    break
+                #early_stopping(dev_loss, model)
+                #if early_stopping.early_stop:
+                #    print('early stopping !')
+                #    break
                 scheduler.step(dev_loss)
             minposs = dev_losses.index(min(dev_losses))+1
             print('lowest dev loss at epoch is {}'.format(minposs))
